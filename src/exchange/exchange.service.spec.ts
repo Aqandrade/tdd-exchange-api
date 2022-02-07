@@ -29,5 +29,11 @@ describe('ExchangeService', () => {
         service.convertAmount({ from: 'USD', to: 'BRL', amount: 1 }),
       ).resolves.not.toThrow();
     });
+
+    it('shoud not be throw if called with valid params', async () => {
+      await expect(
+        service.convertAmount({ from: 'USD', to: 'BRL', amount: 1 }),
+      ).resolves.not.toThrow();
+    });
   });
 });
