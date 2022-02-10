@@ -1,4 +1,7 @@
-import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CurrenciesRepository, CurrenciesService } from './currencies.service';
 
@@ -11,6 +14,7 @@ describe('CurrenciesService', () => {
     const currenciesRepositoryMock = {
       getCurrency: jest.fn(),
       createCurrency: jest.fn(),
+      updateCurrency: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -88,8 +92,42 @@ describe('CurrenciesService', () => {
     });
 
     it('shoud be return when repository return', async () => {
-      (repository.getCurrency as jest.Mock).mockReturnValue(mockData);
-      expect(await service.getCurrency('USD')).toEqual(mockData);
+      (repository.createCurrency as jest.Mock).mockReturnValue(mockData);
+      expect(await service.createCurrency(mockData)).toEqual(mockData);
+    });
+  });
+
+  describe('updateCurrency', () => {
+    it('shoud throw if repository throw', async () => {
+      (repository.updateCurrency as jest.Mock).mockRejectedValue(
+        new InternalServerErrorException(),
+      );
+
+      mockData.currency = 'INVALID';
+      await expect(service.updateCurrency(mockData)).rejects.toThrow(
+        new InternalServerErrorException(),
+      );
+    });
+
+    it('shout not be throw if repository returns', async () => {
+      await expect(service.updateCurrency(mockData)).resolves.not.toThrow();
+    });
+
+    it('shoud be call repository with correct params', async () => {
+      await service.updateCurrency(mockData);
+      expect(repository.updateCurrency).toBeCalledWith(mockData);
+    });
+
+    it('shoud be throw if value < 0', async () => {
+      mockData.value = 0;
+      await expect(service.updateCurrency(mockData)).rejects.toThrow(
+        new BadRequestException('The value must be greater zero'),
+      );
+    });
+
+    it('shoud be return when repository return', async () => {
+      (repository.updateCurrency as jest.Mock).mockReturnValue(mockData);
+      expect(await service.updateCurrency(mockData)).toEqual(mockData);
     });
   });
 });
