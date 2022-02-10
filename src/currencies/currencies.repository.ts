@@ -1,9 +1,14 @@
+import { NotFoundException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { Currencies } from './currencies.entity';
 @EntityRepository(Currencies)
 export class CurrenciesRepository extends Repository<Currencies> {
   async getCurrency(currency: string): Promise<Currencies> {
-    return new Currencies();
+    const result = await this.findOne({ currency });
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
   }
 
   async createCurrency({ currency, value }): Promise<Currencies> {
