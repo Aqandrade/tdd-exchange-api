@@ -3,12 +3,14 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CurrenciesRepository, CurrenciesService } from './currencies.service';
+import { Currencies } from './currencies.entity';
+import { CurrenciesRepository } from './currencies.repository';
+import { CurrenciesService } from './currencies.service';
 
 describe('CurrenciesService', () => {
   let service: CurrenciesService;
   let repository: CurrenciesRepository;
-  let mockData;
+  let mockData: Currencies;
 
   beforeEach(async () => {
     const currenciesRepositoryMock = {
