@@ -10,7 +10,7 @@ import { CurrenciesService } from './currencies.service';
 describe('CurrenciesService', () => {
   let service: CurrenciesService;
   let repository: CurrenciesRepository;
-  let mockData: Currencies;
+  let mockData;
 
   beforeEach(async () => {
     const currenciesRepositoryMock = {
@@ -35,7 +35,7 @@ describe('CurrenciesService', () => {
     mockData = {
       currency: 'USD',
       value: 1,
-    };
+    } as Currencies;
   });
 
   it('should be defined', () => {
