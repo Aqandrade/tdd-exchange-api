@@ -15,6 +15,8 @@ describe('CurrenciesRepository', () => {
     }).compile();
 
     repository = module.get<CurrenciesRepository>(CurrenciesRepository);
+    repository.findOne = jest.fn();
+    repository.save = jest.fn();
     mockData = { currency: 'USD', value: 1 };
   });
 
@@ -57,10 +59,6 @@ describe('CurrenciesRepository', () => {
   });
 
   describe('createCurrency()', () => {
-    beforeEach(() => {
-      repository.save = jest.fn();
-    });
-
     it('shoud be called save with correct params', async () => {
       repository.save = jest.fn().mockReturnValue(mockData);
       await repository.createCurrency(mockData);
@@ -89,6 +87,48 @@ describe('CurrenciesRepository', () => {
 
     it('shoud be created data', async () => {
       expect(await repository.createCurrency(mockData)).toEqual(mockData);
+    });
+  });
+
+  describe('updateCurrency()', () => {
+    it('shoud be called find one with correct params', async () => {
+      repository.findOne = jest.fn().mockReturnValue(mockData);
+      await repository.updateCurrency(mockData);
+      expect(repository.findOne).toBeCalledWith({
+        currency: mockData.currency,
+      });
+    });
+
+    it('shoud be throw if findOne returns empty', async () => {
+      repository.findOne = jest.fn().mockReturnValue(undefined);
+      await expect(repository.updateCurrency(mockData)).rejects.toThrow(
+        new NotFoundException(`The currency ${mockData.currency} not found.`),
+      );
+    });
+
+    it('shoud be called save with correct params', async () => {
+      repository.findOne = jest.fn().mockReturnValue(mockData);
+      repository.save = jest.fn().mockReturnValue(mockData);
+      await repository.updateCurrency(mockData);
+      expect(repository.save).toBeCalledWith(mockData);
+    });
+
+    it('shoud throw if save throws', async () => {
+      repository.findOne = jest.fn().mockReturnValue(mockData);
+      repository.save = jest
+        .fn()
+        .mockRejectedValue(new InternalServerErrorException());
+
+      await expect(repository.updateCurrency(mockData)).rejects.toThrow(
+        new InternalServerErrorException(),
+      );
+    });
+
+    it('shoud be return updated data', async () => {
+      repository.findOne = jest.fn().mockReturnValue(mockData);
+      mockData.value = 2;
+      repository.save = jest.fn().mockReturnValue(mockData);
+      expect(await repository.updateCurrency(mockData)).toEqual(mockData);
     });
   });
 });
