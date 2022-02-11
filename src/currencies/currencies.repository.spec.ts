@@ -3,11 +3,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Currencies } from './currencies.entity';
 import { CurrenciesRepository } from './currencies.repository';
 
 describe('CurrenciesRepository', () => {
   let repository: CurrenciesRepository;
+  let mockData;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -15,6 +15,7 @@ describe('CurrenciesRepository', () => {
     }).compile();
 
     repository = module.get<CurrenciesRepository>(CurrenciesRepository);
+    mockData = { currency: 'USD', value: 1 };
   });
 
   it('shoud be defined', () => {
@@ -46,14 +47,48 @@ describe('CurrenciesRepository', () => {
     });
 
     it('shoud return when findOne returns', async () => {
-      repository.findOne = jest
-        .fn()
-        .mockReturnValue({ currency: 'USD', value: 1 } as Currencies);
+      repository.findOne = jest.fn().mockReturnValue(mockData);
 
       expect(await repository.getCurrency('USD')).toEqual({
         currency: 'USD',
         value: 1,
       });
+    });
+  });
+
+  describe('createCurrency()', () => {
+    beforeEach(() => {
+      repository.save = jest.fn();
+    });
+
+    it('shoud be called save with correct params', async () => {
+      repository.save = jest.fn().mockReturnValue(mockData);
+      await repository.createCurrency(mockData);
+      expect(repository.save).toBeCalledWith(mockData);
+    });
+
+    it('shoud be throw if save throw', async () => {
+      repository.save = jest
+        .fn()
+        .mockRejectedValue(new InternalServerErrorException());
+      mockData.currency = 'INVALID';
+
+      await expect(repository.createCurrency(mockData)).rejects.toThrow(
+        new InternalServerErrorException(),
+      );
+    });
+
+    it('shoud be throw if called with invalid params', async () => {
+      mockData.currency = 'INVALID';
+      await expect(repository.createCurrency(mockData)).rejects.toThrow();
+
+      mockData.currency = 'USD';
+      mockData.value = 'INVALID';
+      await expect(repository.createCurrency(mockData)).rejects.toThrow();
+    });
+
+    it('shoud be created data', async () => {
+      expect(await repository.createCurrency(mockData)).toEqual(mockData);
     });
   });
 });
