@@ -17,6 +17,7 @@ describe('CurrenciesRepository', () => {
     repository = module.get<CurrenciesRepository>(CurrenciesRepository);
     repository.findOne = jest.fn();
     repository.save = jest.fn();
+    repository.delete = jest.fn();
     mockData = { currency: 'USD', value: 1 };
   });
 
@@ -91,7 +92,7 @@ describe('CurrenciesRepository', () => {
   });
 
   describe('updateCurrency()', () => {
-    it('shoud be called find one with correct params', async () => {
+    it('shoud be called findOne with correct params', async () => {
       repository.findOne = jest.fn().mockReturnValue(mockData);
       await repository.updateCurrency(mockData);
       expect(repository.findOne).toBeCalledWith({
@@ -129,6 +130,52 @@ describe('CurrenciesRepository', () => {
       mockData.value = 2;
       repository.save = jest.fn().mockReturnValue(mockData);
       expect(await repository.updateCurrency(mockData)).toEqual(mockData);
+    });
+  });
+
+  describe('deleteCurrency()', () => {
+    it('shoud be call findOne with correct params', async () => {
+      repository.findOne = jest.fn().mockReturnValue(mockData);
+      await repository.deleteCurrency(mockData.currency);
+      expect(repository.findOne).toBeCalledWith({
+        currency: mockData.currency,
+      });
+    });
+
+    it('shoud be throw if findOne throw', async () => {
+      repository.findOne = jest
+        .fn()
+        .mockRejectedValue(new InternalServerErrorException());
+      await expect(
+        repository.deleteCurrency(mockData.currency),
+      ).rejects.toThrow(new InternalServerErrorException());
+    });
+
+    it('shoud be throw if findOne returns empty', async () => {
+      repository.findOne = jest.fn().mockReturnValue(undefined);
+      await expect(
+        repository.deleteCurrency(mockData.currency),
+      ).rejects.toThrow(
+        new NotFoundException(`The currency ${mockData.currency} not found`),
+      );
+    });
+
+    it('shoud be call delete with correct params', async () => {
+      repository.findOne = jest.fn().mockReturnValue(mockData);
+      await repository.deleteCurrency(mockData.currency);
+      await expect(repository.delete).toBeCalledWith({
+        currency: mockData.currency,
+      });
+    });
+
+    it('shoud throw if delete throws', async () => {
+      repository.findOne = jest.fn().mockReturnValue({});
+      repository.delete = jest
+        .fn()
+        .mockRejectedValue(new InternalServerErrorException());
+      await expect(
+        repository.deleteCurrency(mockData.currency),
+      ).rejects.toThrow(new InternalServerErrorException());
     });
   });
 });
