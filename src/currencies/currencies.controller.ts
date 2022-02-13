@@ -34,4 +34,15 @@ export class CurrenciesController {
   async deleteCurrency(@Param('currency') currency: string): Promise<void> {
     return await this.currenciesService.deleteCurrency(currency);
   }
+
+  @Patch('/:currency/value')
+  async updateCurrency(
+    @Param('currency') currency: string,
+    @Body() value: number,
+  ) {
+    return await this.currenciesService.updateCurrency({
+      currency,
+      value,
+    });
+  }
 }
