@@ -5,6 +5,7 @@ import {
 import { validateOrReject } from 'class-validator';
 import { EntityRepository, Repository } from 'typeorm';
 import { Currencies } from './currencies.entity';
+import { CreateCurrencyDto } from './dto/create-currency.dto';
 import { CurrenciesInputType } from './types/currencies-input.type';
 @EntityRepository(Currencies)
 export class CurrenciesRepository extends Repository<Currencies> {
@@ -17,9 +18,9 @@ export class CurrenciesRepository extends Repository<Currencies> {
   }
 
   async createCurrency(
-    currenciesInputType: CurrenciesInputType,
+    createCurrencyDto: CreateCurrencyDto,
   ): Promise<Currencies> {
-    const { currency, value } = currenciesInputType;
+    const { currency, value } = createCurrencyDto;
     const createCurrency = new Currencies();
     createCurrency.currency = currency;
     createCurrency.value = value;

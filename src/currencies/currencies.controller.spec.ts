@@ -1,4 +1,7 @@
-import { BadRequestException } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CurrenciesController } from './currencies.controller';
 import { CurrenciesService } from './currencies.service';
@@ -12,6 +15,7 @@ describe('CurrenciesController', () => {
   beforeEach(async () => {
     const currenciesServiceMock = {
       getCurrency: jest.fn(),
+      createCurrency: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -51,6 +55,27 @@ describe('CurrenciesController', () => {
     it('shoud be return when services return', async () => {
       service.getCurrency = jest.fn().mockReturnValue(mockData);
       expect(await controller.getCurrency('USD')).toEqual(mockData);
+    });
+  });
+
+  describe('createCurrency()', () => {
+    it('shoud be called service with correct params', async () => {
+      await controller.createCurrency(mockData);
+      expect(service.createCurrency).toBeCalledWith(mockData);
+    });
+
+    it('shoud be throw when services throw', async () => {
+      service.createCurrency = jest
+        .fn()
+        .mockRejectedValue(new InternalServerErrorException());
+      await expect(controller.createCurrency(mockData)).rejects.toThrow(
+        new InternalServerErrorException(),
+      );
+    });
+
+    it('shoud be return when services return', async () => {
+      service.createCurrency = jest.fn().mockReturnValue(mockData);
+      expect(await controller.createCurrency(mockData)).toEqual(mockData);
     });
   });
 });
