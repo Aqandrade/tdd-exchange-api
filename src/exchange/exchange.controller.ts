@@ -9,8 +9,8 @@ export class ExchangeController {
 
   @Get()
   async convertAmount(
-    @Query() convertAMountDto: ConvertAmountDto,
+    @Query() convertAmountDto: ConvertAmountDto,
   ): Promise<ExchangeType> {
-    return await this.exchangeService.convertAmount(convertAMountDto);
+    return await this.exchangeService.convertAmount(convertAmountDto);
   }
 }
