@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExchangeController } from './exchange.controller';
 import { ExchangeService } from './exchange.service';
+import { ExchangeType } from './types/exchange.type';
 
 describe('ExchangeController', () => {
   let controller: ExchangeController;
@@ -51,8 +52,9 @@ describe('ExchangeController', () => {
     });
 
     it('shoud be return when services return', async () => {
-      service.convertAmount = jest.fn().mockReturnValue(mockData);
-      expect(await controller.convertAmount(mockData)).toEqual(mockData);
+      const mockReturn = { amount: 1 } as ExchangeType;
+      service.convertAmount = jest.fn().mockReturnValue(mockReturn);
+      expect(await controller.convertAmount(mockData)).toEqual(mockReturn);
     });
   });
 });
