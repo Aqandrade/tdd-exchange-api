@@ -18,7 +18,7 @@ describe('CurrenciesRepository', () => {
     repository.findOne = jest.fn();
     repository.save = jest.fn();
     repository.delete = jest.fn();
-    mockData = { currency: 'USD', value: 1 };
+    mockData = { currency: 'USD', value: '1' };
   });
 
   it('shoud be defined', () => {
@@ -35,7 +35,7 @@ describe('CurrenciesRepository', () => {
     it('shoud be throw if findOne return empty', async () => {
       repository.findOne = jest.fn().mockReturnValue(undefined);
       await expect(repository.getCurrency('USD')).rejects.toThrow(
-        new NotFoundException(),
+        new NotFoundException(`The currency USD not found.`),
       );
     });
 
@@ -54,7 +54,7 @@ describe('CurrenciesRepository', () => {
 
       expect(await repository.getCurrency('USD')).toEqual({
         currency: 'USD',
-        value: 1,
+        value: '1',
       });
     });
   });

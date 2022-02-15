@@ -12,7 +12,7 @@ export class CurrenciesRepository extends Repository<Currencies> {
   async getCurrency(currency: string): Promise<Currencies> {
     const result = await this.findOne({ currency });
     if (!result) {
-      throw new NotFoundException();
+      throw new NotFoundException(`The currency ${currency} not found.`);
     }
     return result;
   }
