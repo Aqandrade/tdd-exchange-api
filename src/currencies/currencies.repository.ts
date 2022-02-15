@@ -26,7 +26,6 @@ export class CurrenciesRepository extends Repository<Currencies> {
     createCurrency.value = value;
     try {
       await validateOrReject(createCurrency);
-      console.log(createCurrency);
       await this.save(createCurrency);
       return createCurrency;
     } catch (error) {
