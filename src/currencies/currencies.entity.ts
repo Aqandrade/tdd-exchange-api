@@ -1,7 +1,9 @@
 import { Type } from 'class-transformer';
+import { IsNumberString } from 'class-validator';
 import { IsNotEmpty, IsNumber, Length } from 'class-validator';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ObjectIdColumn,
   PrimaryColumn,
@@ -22,11 +24,11 @@ export class Currencies {
 
   @Column()
   @IsNotEmpty()
-  @IsNumber()
+  @IsNumberString()
   @Type(() => Number)
   value: number;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
