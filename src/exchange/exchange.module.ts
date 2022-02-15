@@ -3,6 +3,7 @@ import { CurrenciesModule } from 'src/currencies/currencies.module';
 import { ExchangeService } from './exchange.service';
 
 @Module({
+  imports: [CurrenciesModule],
   providers: [ExchangeService, CurrenciesModule],
 })
 export class ExchangeModule {}

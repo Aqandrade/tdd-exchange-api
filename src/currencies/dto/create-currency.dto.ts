@@ -1,4 +1,4 @@
-import { IsNotEmpty, Length } from 'class-validator';
+import { IsNotEmpty, IsNumberString, Length } from 'class-validator';
 
 export class CreateCurrencyDto {
   @Length(3, 3)
@@ -6,5 +6,6 @@ export class CreateCurrencyDto {
   currency: string;
 
   @IsNotEmpty()
+  @IsNumberString()
   value: number;
 }
